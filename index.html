@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Services — Intake Call Script</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232735;
+    --border: #2e3345;
+    --text: #e1e4ed;
+    --text-muted: #8b90a0;
+    --accent: #6c8cff;
+    --wc: #da77f2;
+    --wc-bg: rgba(218,119,242,0.08);
+    --wc-border: rgba(218,119,242,0.25);
+    --auto: #4ecdc4;
+    --auto-bg: rgba(78,205,196,0.08);
+    --auto-border: rgba(78,205,196,0.25);
+    --im: #ffd43b;
+    --im-bg: rgba(255,212,59,0.08);
+    --im-border: rgba(255,212,59,0.25);
+    --quote: #ffa94d;
+    --why-bg: rgba(108,140,255,0.06);
+    --tip: #51cf66;
+    --tip-bg: rgba(81,207,102,0.08);
+    --tip-border: rgba(81,207,102,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .filter-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap; backdrop-filter: blur(10px);
+  }
+  .filter-bar label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-group { display: flex; gap: 6px; align-items: center; }
+  .filter-btn {
+    padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .filter-btn.active-wc { background: var(--wc-bg); border-color: var(--wc-border); color: var(--wc); }
+  .filter-btn.active-auto { background: var(--auto-bg); border-color: var(--auto-border); color: var(--auto); }
+  .filter-btn.active-im { background: var(--im-bg); border-color: var(--im-border); color: var(--im); }
+  .question-count { margin-left: auto; font-size: 13px; color: var(--text-muted); }
+  .question-count span { color: var(--accent); font-weight: 600; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+    padding: 16px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+
+  .section { margin-bottom: 40px; }
+  .section-header {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .section-number { font-size: 14px; font-weight: 700; color: var(--accent); min-width: 24px; }
+  h2 { font-size: 20px; font-weight: 700; }
+  .section-time { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+  .talk-track {
+    background: var(--surface); border-left: 3px solid var(--border);
+    padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0;
+    font-style: italic; color: var(--text-muted); font-size: 14px;
+  }
+  .talk-track.quote { border-left-color: var(--quote); color: var(--text); font-style: normal; }
+
+  .question {
+    padding: 10px 14px; margin: 6px 0; border-radius: 8px;
+    border: 1px solid transparent; transition: all 0.15s;
+  }
+  .question:hover { background: var(--surface); border-color: var(--border); }
+  .question.hidden { display: none; }
+  .q-number { font-weight: 700; font-size: 13px; color: var(--accent); margin-right: 8px; min-width: 36px; display: inline-block; }
+  .q-text { font-size: 15px; }
+  .q-text em { font-style: normal; color: var(--text); font-weight: 500; }
+
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-right: 6px; vertical-align: middle;
+  }
+  .tag-wc { background: var(--wc-bg); color: var(--wc); border: 1px solid var(--wc-border); }
+  .tag-auto { background: var(--auto-bg); color: var(--auto); border: 1px solid var(--auto-border); }
+  .tag-im { background: var(--im-bg); color: var(--im); border: 1px solid var(--im-border); }
+
+  .question.tagged-wc { border-left: 3px solid var(--wc); background: var(--wc-bg); }
+  .question.tagged-auto { border-left: 3px solid var(--auto); background: var(--auto-bg); }
+  .question.tagged-im { border-left: 3px solid var(--im); background: var(--im-bg); }
+
+  .why {
+    font-size: 13px; color: var(--text-muted); margin: 4px 0 4px 44px;
+    padding: 6px 10px; background: var(--why-bg); border-radius: 6px; line-height: 1.5;
+  }
+
+  .instruction { font-size: 14px; color: var(--text-muted); margin: 8px 0; line-height: 1.6; }
+  .skip-notice {
+    font-size: 13px; color: var(--text-muted); font-style: italic;
+    padding: 8px 14px; background: var(--surface); border-radius: 8px; margin-bottom: 12px;
+  }
+  h3 { font-size: 16px; font-weight: 600; margin: 20px 0 10px; color: var(--text); }
+  h4 { font-size: 14px; font-weight: 600; margin: 12px 0 6px; color: var(--text-muted); }
+
+  .objection {
+    margin: 12px 0; padding: 16px; background: var(--surface);
+    border-radius: 10px; border: 1px solid var(--border);
+  }
+  .objection-q { font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 8px; }
+  .objection-a { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  .sales-tip {
+    margin: 12px 0; padding: 14px 16px; background: var(--tip-bg);
+    border: 1px solid var(--tip-border); border-radius: 10px;
+  }
+  .sales-tip-title { font-weight: 700; font-size: 14px; color: var(--tip); margin-bottom: 4px; }
+  .sales-tip-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  .comp-table-wrapper {
+    overflow-x: auto; margin: 20px 0; border-radius: 10px; border: 1px solid var(--border);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--surface2); padding: 10px 14px; text-align: left;
+    font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface); }
+
+  .checklist { list-style: none; margin: 12px 0; }
+  .checklist li {
+    padding: 6px 10px; font-size: 14px; border-radius: 6px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; transition: background 0.1s;
+  }
+  .checklist li:hover { background: var(--surface); }
+  .checklist li::before {
+    content: ''; width: 18px; height: 18px; border: 2px solid var(--border);
+    border-radius: 4px; display: inline-block; flex-shrink: 0; transition: all 0.15s;
+  }
+  .checklist li.checked::before {
+    background: var(--accent); border-color: var(--accent);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z'/%3E%3C/svg%3E");
+    background-size: 12px; background-repeat: no-repeat; background-position: center;
+  }
+  .checklist li.checked { color: var(--text-muted); text-decoration: line-through; opacity: 0.6; }
+
+  @media (max-width: 640px) {
+    .filter-bar { padding: 10px 12px; gap: 8px; }
+    .container { padding: 20px 14px 60px; }
+    .question-count { display: none; }
+  }
+  @media print {
+    .filter-bar { display: none; }
+    body { background: white; color: black; }
+    .question, .talk-track, .section, table, .checklist li { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="filter-bar">
+  <label>Lines:</label>
+  <div class="filter-group">
+    <button class="filter-btn active-wc" data-filter="wc" onclick="toggleFilter(this)">WC</button>
+    <button class="filter-btn active-auto" data-filter="auto" onclick="toggleFilter(this)">Auto</button>
+    <button class="filter-btn active-im" data-filter="im" onclick="toggleFilter(this)">Inland Marine</button>
+  </div>
+  <div class="question-count">Showing <span id="q-count">104</span> / 104 questions</div>
+</div>
+
+<div class="container">
+
+<h1>Tree Services -- Intake Call Script</h1>
+<p class="subtitle">GL is the backbone of every call. WC, Auto, and Inland Marine are separate sections you add based on what the client needs. Use the filters above to show or hide line-specific questions. 104 questions total, 15-20 min target.</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="tag tag-wc">WC</span> Workers Comp -- ask only if they need WC</div>
+  <div class="legend-item"><span class="tag tag-auto">Auto</span> Commercial Auto -- ask only if they need auto</div>
+  <div class="legend-item"><span class="tag tag-im">IM</span> Inland Marine -- ask only if they want equipment coverage</div>
+  <div class="legend-item">Everything else = ask on every call</div>
+</div>
+
+<!-- ===================== SECTION 1: OPEN ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2>OPEN -- Take the Handoff</h2>
+    <span class="section-time">30 sec</span>
+  </div>
+
+  <div class="talk-track">The referral agent will introduce the lead and give a quick summary. Listen, then take over.</div>
+  <div class="talk-track quote">"Got it, thanks [referral agent]. I'll take it from here."</div>
+  <div class="talk-track quote">"Hey [name], how's it going? I'm [your name] with Soma Insurance. We work with a lot of tree service companies so you're in good hands. Let me grab a few details and I'll get you quotes as fast as I can."</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q1</span> <span class="q-text">"Let me confirm -- the business is [name]? Can you spell that for me?"</span></div>
+  <div class="why">Verify legal business name. Spelling errors cause submission rejections.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q2</span> <span class="q-text">"And the owner's name -- can you spell that?"</span></div>
+  <div class="why">Must match exactly on all ACORD forms.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q3</span> <span class="q-text">"What's the best address for the business -- where you operate out of?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q4</span> <span class="q-text">"Just in case we get disconnected -- best number to call you back?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q5</span> <span class="q-text">"And best email?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q6</span> <span class="q-text">"Quick question -- are you currently working with any other insurance broker on this?"</span></div>
+  <div class="why">Avoids wasting time if another agent already has the deal at a market we'd want to use.</div>
+</div>
+
+<!-- ===================== SECTION 2: DISCOVER ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2>DISCOVER -- Let Them Talk First</h2>
+    <span class="section-time">3-4 min</span>
+  </div>
+
+  <div class="talk-track">Don't jump to the checklist. Start open and let them tell you about their business.</div>
+  <div class="talk-track quote">"So tell me about the business -- what kind of tree work do you do?"</div>
+  <div class="talk-track">Listen. They'll usually tell you what services they offer, how many trucks, what their pain points are. Let them finish, then fill gaps below.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q7</span> <span class="q-text">"Do you guys do any landscaping work, or is it just tree trimming?"</span></div>
+  <div class="why">Opens the operations conversation naturally. Many tree companies also do landscaping -- it matters for pricing and market selection.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q8</span> <span class="q-text">"Could you just give me a walk-through of what you're looking for? Any challenges you're having with your current insurance?"</span></div>
+  <div class="why">Let them vent. If they're overpaying, this is where you'll hear it -- and it gives you the pain point to sell against.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q9</span> <span class="q-text">"How long have you been in business?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q10</span> <span class="q-text">"And how many years of experience in tree work total -- including before this company?"</span></div>
+  <div class="why">Years in business ≠ years of experience. Carriers want both. More experience = better rates.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q11</span> <span class="q-text">"Is this an LLC, corporation, sole prop?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q12</span> <span class="q-text">"Do you have your federal tax ID handy?"</span></div>
+  <div class="why">If no: "No worries -- text or email it when you get a chance. We need it before we can submit."</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q13</span> <span class="q-text">"Is this full-time or part-time?"</span></div>
+  <div class="why">Part-time tree work is a different risk profile. Affects pricing.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q14</span> <span class="q-text">"Do you have a website?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q15</span> <span class="q-text">"Any DBA or other name the business goes by?"</span></div>
+</div>
+
+<!-- ===================== SECTION 3: OPERATIONS ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <h2>OPERATIONS -- The Core of the Call</h2>
+    <span class="section-time">5-6 min</span>
+  </div>
+
+  <div class="instruction">This is the most important section. The operations breakdown drives pricing, market selection, and which supplemental forms we'll need. Get percentages for each type of work -- they need to total 100%.</div>
+
+  <h3>Type of Work + Revenue Breakdown</h3>
+  <div class="talk-track quote">"Let me walk through the types of tree work -- just tell me what applies and roughly what percentage of your revenue comes from each."</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q16</span> <span class="q-text">"You're doing tree trimming and pruning, right? What percentage of your revenue is that?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q17</span> <span class="q-text">"Any tree removal? What percentage?"</span></div>
+  <div class="why">Tree removal is higher hazard than trimming. Carriers rate it differently and it can affect which markets will take the deal.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q18</span> <span class="q-text">"Stump grinding or stump removal?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q19</span> <span class="q-text">"What percentage?"</span></div>
+
+  <div class="question" data-tags=""><span class="q-number">Q20</span> <span class="q-text">"Any lawn care, landscaping, or excavation work?"</span></div>
+  <div class="why">Landscaping and lawn servicing are separate operation codes with different rates. Even if they say "no" now, ask if they're planning to add it.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q21</span> <span class="q-text">"Any emergency or storm cleanup work?"</span></div>
+  <div class="why">Especially in hurricane-prone states. Storm cleanup means working near downed power lines and unstable structures -- higher exposure.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q22</span> <span class="q-text">"Any controlled burns or land clearing?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q23</span> <span class="q-text">"Highway, street, or utility right-of-way maintenance?"</span></div>
+  <div class="why">Working near public roads and power lines is higher hazard. Some carriers won't touch it.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q24</span> <span class="q-text">"Any logging or lumbering -- cutting timber for sale?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q25</span> <span class="q-text">"Do you make and sell mulch from what you cut?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q26</span> <span class="q-text">"Any crop dusting, aerial spraying, or defensible space / wildfire mitigation work?"</span></div>
+  <div class="why">These are almost always "no" for tree trimmers. Confirm quickly and move on.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q27</span> <span class="q-text">"Is anyone on the team a certified arborist -- ISA certified?"</span></div>
+  <div class="why">This is a positive underwriting factor. Certified arborists can get better rates.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q28</span> <span class="q-text">"Do you generate any power -- other than emergency backup generators?"</span></div>
+  <div class="why">Rare for tree trimmers. Just confirm no and move on.</div>
+
+  <h3>Commercial vs Residential</h3>
+  <div class="question" data-tags=""><span class="q-number">Q29</span> <span class="q-text">"Is the work more commercial or residential? What's the percentage split?"</span></div>
+  <div class="why">This is a core rating factor on every GL policy. 100% residential vs 50/50 commercial are very different risk profiles.</div>
+
+  <h3>Geography</h3>
+  <div class="question" data-tags=""><span class="q-number">Q30</span> <span class="q-text">"Where are you guys located? What states do you operate in?"</span></div>
+  <div class="why">Multi-state operations affect carrier eligibility and pricing. Also a good rapport moment -- if you know the area, mention it.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q31</span> <span class="q-text">"Any current or future work planned in New York?"</span></div>
+  <div class="why">If yes, ask: "Do NY ops exceed 50% of total receipts?" and "Any work in the five boroughs?" New York labor law makes tree work there extremely hard to insure.</div>
+
+  <h3>Height, Climbing, and Cranes</h3>
+  <div class="question" data-tags=""><span class="q-number">Q32</span> <span class="q-text">"What's the maximum height of trees you work on?"</span></div>
+  <div class="why">Underwriters always ask this. If the client doesn't know, that's okay -- make a note to follow up.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q33</span> <span class="q-text">"Do your guys climb the trees, or is it all bucket truck and lift work?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q34</span> <span class="q-text">If they mention a climber: "Is that someone on your crew, or do you sub that out?"</span></div>
+  <div class="why">Climbing is higher exposure than bucket truck work. If they sub it out, that changes the GL and WC picture.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q35</span> <span class="q-text">"Do you use cranes for any tree removal? If yes, what's the maximum height?"</span></div>
+  <div class="why">Crane-assisted removal is significantly higher hazard. Many tree companies contract crane work out -- note which.</div>
+
+  <h3>Chemicals</h3>
+  <div class="question" data-tags=""><span class="q-number">Q36</span> <span class="q-text">"Do you use any pesticides or herbicides?"</span></div>
+  <div class="why">If yes, ask: "Are they EPA approved?" and "What percentage of your operations?" Adds pollution exposure. Some carriers exclude it, some charge extra.</div>
+
+  <h3>Proximity Hazards</h3>
+  <div class="question" data-tags=""><span class="q-number">Q37</span> <span class="q-text">"Does any of the work happen near power lines, public roads, or buildings and structures?"</span></div>
+  <div class="why">Residential work almost always involves proximity to structures and sometimes power lines. Note what applies.</div>
+
+  <h3>Safety</h3>
+  <div class="question" data-tags=""><span class="q-number">Q38</span> <span class="q-text">"Do you have a formal safety program in place?"</span></div>
+  <div class="why">A written safety program is a positive factor for both GL and WC. If they say no, it's not a dealbreaker -- just note it.</div>
+</div>
+
+<!-- ===================== SECTION 4: PEOPLE & MONEY ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">04</span>
+    <h2>PEOPLE & MONEY</h2>
+    <span class="section-time">3-4 min</span>
+  </div>
+
+  <div class="question" data-tags=""><span class="q-number">Q39</span> <span class="q-text">"How many W-2 employees do you have right now?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q40</span> <span class="q-text">"Including the owner?"</span></div>
+  <div class="why">If the owner is on an S-Corp, they're technically a W-2 employee. Clarify so payroll numbers make sense.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q41</span> <span class="q-text">"How many are full-time vs part-time?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q42</span> <span class="q-text">"Any leased employees?"</span></div>
+
+  <div class="question" data-tags=""><span class="q-number">Q43</span> <span class="q-text">"What's the estimated annual payroll -- total for the year, all W-2 employees?"</span></div>
+  <div class="why">This is one of the two numbers that drive every quote (the other is revenue). Get at least an estimate.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q44</span> <span class="q-text">"How much are you doing roughly in annual sales?"</span></div>
+  <div class="why">Gross annual revenue. Even a rough estimate works. Payroll + revenue are the foundation of GL and WC pricing.</div>
+
+  <h3>Subcontractors</h3>
+  <div class="question" data-tags=""><span class="q-number">Q45</span> <span class="q-text">"Do you subcontract any work out? What percentage?"</span></div>
+  <div class="why">Subcontractor percentage matters a lot. If they sub out 50% of revenue, that's a very different risk profile than 5%.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q46</span> <span class="q-text">"What type of work do you sub out?"</span></div>
+  <div class="why">Common: tree climbing, crane work, stump grinding. Each affects GL differently.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q47</span> <span class="q-text">"What's the annual subcontract cost?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q48</span> <span class="q-text">"Do you require insurance certificates from your subs -- naming you as additional insured?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q49</span> <span class="q-text">"Do they sign written contracts with hold-harmless agreements?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q50</span> <span class="q-text">"Are their limits at least $1M per occurrence / $2M aggregate?"</span></div>
+  <div class="why">If the answer to Q48-Q50 is "no," that's not a dealbreaker -- but it increases your client's exposure and carriers will ask.</div>
+</div>
+
+<!-- ===================== SECTION 5: EQUIPMENT / IM ===================== -->
+<div class="section" data-section-tags="im">
+  <div class="section-header">
+    <span class="section-number">05</span>
+    <h2>EQUIPMENT / INLAND MARINE</h2>
+    <span class="section-time">1-2 min</span>
+  </div>
+
+  <div class="skip-notice"><span class="tag tag-im">IM</span> Only ask this section if they want equipment coverage. It often comes up naturally -- they'll mention expensive gear.</div>
+
+  <div class="question tagged-im" data-tags="im"><span class="q-number">Q51</span> <span class="q-text">"What kind of equipment do you have? Walk me through it -- stump grinders, chippers, chainsaws, bucket trucks, skid steers, front loaders?"</span></div>
+  <div class="question tagged-im" data-tags="im"><span class="q-number">Q52</span> <span class="q-text">"For each piece -- what's the year, make, model, and serial number or VIN?"</span></div>
+  <div class="question tagged-im" data-tags="im"><span class="q-number">Q53</span> <span class="q-text">"What's the replacement cost or current value for each?"</span></div>
+  <div class="question tagged-im" data-tags="im"><span class="q-number">Q54</span> <span class="q-text">"Is each piece owned or leased?"</span></div>
+  <div class="question tagged-im" data-tags="im"><span class="q-number">Q55</span> <span class="q-text">"Do you have titles or proof of ownership for each?"</span></div>
+  <div class="why">We'll need titles to get the equipment covered. If they don't have them on hand, they can email them later.</div>
+</div>
+
+<!-- ===================== SECTION 6: COVERAGE & HISTORY ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">06</span>
+    <h2>COVERAGE & HISTORY</h2>
+    <span class="section-time">2-3 min</span>
+  </div>
+
+  <div class="question" data-tags=""><span class="q-number">Q56</span> <span class="q-text"><em>"What coverage are you looking for? GL? Workers comp? Auto? Equipment? All of it?"</em></span></div>
+  <div class="why">This determines which of the WC, Auto, and IM sections below you'll need to go through.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q57</span> <span class="q-text">"Have you had continuous liability coverage for at least three years?"</span></div>
+  <div class="why">Three years continuous coverage is a threshold question for most carriers. Less than that limits your market options.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q58</span> <span class="q-text">"How long have you had insurance coverage?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q59</span> <span class="q-text">"So you've had insurance since [year]?" <em>(confirm what they said)</em></span></div>
+  <div class="why">Some companies incorporate years before they start working. Carriers care about when coverage started, not when the LLC was formed.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q60</span> <span class="q-text">"Who's your current carrier?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q61</span> <span class="q-text">"What are you paying?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q62</span> <span class="q-text">"What limits do you have?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q63</span> <span class="q-text">"When does it expire?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q64</span> <span class="q-text">"Why are you looking to move -- rate went up, service issue, or just shopping?"</span></div>
+
+  <h4>If lapsed:</h4>
+  <div class="instruction">"When did it lapse and why?" -- lapses limit market options, so get the specifics.</div>
+  <h4>If new venture:</h4>
+  <div class="talk-track quote">"Got it -- brand new. That's fine, we work with new ventures all the time."</div>
+
+  <h3>Claims</h3>
+  <div class="question" data-tags=""><span class="q-number">Q65</span> <span class="q-text">"Any claims in the last 5 years -- any line, GL, WC, auto, anything?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q66</span> <span class="q-text">If yes: "What happened -- brief is fine."</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q67</span> <span class="q-text">"Ever been cancelled, declined, or nonrenewed?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q68</span> <span class="q-text">"Anything happening right now that could turn into a claim?"</span></div>
+</div>
+
+<!-- ===================== SECTION 7: TIMELINE ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">07</span>
+    <h2>TIMELINE & URGENCY</h2>
+    <span class="section-time">30 sec</span>
+  </div>
+
+  <div class="question" data-tags=""><span class="q-number">Q69</span> <span class="q-text">"When does the current coverage expire, and how quickly do you need the new coverage in place?"</span></div>
+  <div class="why">This sets your deadline. If they want it by end of week, you need to move fast. If it's 60 days out, you have time to shop more markets.</div>
+</div>
+
+<!-- ===================== SECTION 8: WORKERS COMP ===================== -->
+<div class="section" data-section-tags="wc">
+  <div class="section-header">
+    <span class="section-number">08</span>
+    <h2>WORKERS COMP</h2>
+    <span class="section-time">3-4 min</span>
+  </div>
+
+  <div class="skip-notice"><span class="tag tag-wc">WC</span> Skip this entire section if they don't need workers comp.</div>
+  <div class="talk-track quote">"Let me ask a few things specifically for the workers comp quote."</div>
+
+  <div class="instruction">WC class codes for tree services: 0106 (pruning/trimming only), 2702 (logging/lumbering), 2710 (tree removal including stump). The payroll split between these codes directly affects the premium.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q70</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do you know what carrier you're with right now for workers comp?"</span></div>
+  <div class="why">Many tree companies get WC bundled through their payroll provider (Gusto, ADP, etc.). Payroll-bundled WC is almost always overpriced. If that's the case, let them know: "We can almost always beat that rate."</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q71</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Is it through your payroll company -- like ADP, Gusto, something like that?"</span></div>
+  <div class="why">Easy win. Payroll companies are not insurance specialists. We can usually save them money and get better coverage.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q72</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do you know your experience modification rate -- your e-mod?"</span></div>
+  <div class="why">The e-mod multiplies the WC premium. Below 1.0 = discount. Above 1.0 = surcharge. If they don't know, we can look it up through NCCI.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q73</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Have you had any WC audits? Any audit disputes or additional premium owed?"</span></div>
+  <div class="why">Unpaid audit balances can block placement at certain carriers.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q74</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do you have owners or officers on payroll? Who, and what's their annual compensation?"</span></div>
+  <div class="why">Owners can be included or excluded from WC depending on state rules. Need names, titles, ownership %, and their preference.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q75</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Any employees under 16 or over 60?"</span></div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q76</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Any seasonal or temporary workers?"</span></div>
+  <div class="why">Tree services are often seasonal. Affects payroll estimates and audit exposure.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q77</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do any employees work for another business?"</span></div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q78</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Does the payroll include overtime? Rough percentage?"</span></div>
+  <div class="why">WC carriers often exclude the overtime premium from rated payroll. Knowing this prevents audit surprises.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q79</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do you provide group transportation -- like driving the crew to job sites together?"</span></div>
+  <div class="why">Creates additional WC exposure if employees are injured in transit.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q80</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do any employees travel out of state for work?"</span></div>
+  <div class="why">May need Part 3 other-states coverage on the WC policy.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q81</span> <span class="tag tag-wc">WC</span> <span class="q-text">"Do your subcontractors carry their own workers comp?"</span></div>
+  <div class="why">If subs don't carry their own WC, their payroll gets picked up on YOUR client's policy at audit. If they sub out a lot of work, this is critical.</div>
+
+  <div class="question tagged-wc" data-tags="wc"><span class="q-number">Q82</span> <span class="tag tag-wc">WC</span> <span class="q-text">If they've had WC claims: "What was the nature of the injury -- fall from a tree, chainsaw accident, struck by a branch?"</span></div>
+  <div class="why">Tree service WC claims are often severe. The type of injury matters for carrier appetite -- a chainsaw laceration is very different from a twisted ankle.</div>
+</div>
+
+<!-- ===================== SECTION 9: AUTO ===================== -->
+<div class="section" data-section-tags="auto">
+  <div class="section-header">
+    <span class="section-number">09</span>
+    <h2>COMMERCIAL AUTO</h2>
+    <span class="section-time">3-4 min</span>
+  </div>
+
+  <div class="skip-notice"><span class="tag tag-auto">Auto</span> Skip this entire section if they don't need commercial auto.</div>
+  <div class="talk-track quote">"Let's talk about your vehicles."</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q83</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"How many vehicles does the company have?"</span></div>
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q84</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"What are they -- year, make, model for each?"</span></div>
+  <div class="why">Common setup for tree companies: a sedan or SUV for sales/estimating, one or two trucks for hauling equipment and towing trailers.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q85</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Are they owned by the company, leased, or financed?"</span></div>
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q86</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Where are they garaged overnight -- what address?"</span></div>
+  <div class="why">Garaging address affects rating. Often different from the business mailing address.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q87</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"What are the vehicles used for -- hauling equipment, driving to job sites, sales calls, towing trailers?"</span></div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q88</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Any trailers? Flatbed, equipment trailer, chipper trailer?"</span></div>
+  <div class="why">Tree companies almost always have trailers. They need to be scheduled on the auto policy -- don't forget them.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q89</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"How many people drive company vehicles?"</span></div>
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q90</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"I'll need driver names, dates of birth, and license numbers. Can you email those, or do you have them now?"</span></div>
+  <div class="why">Easier to collect by email. Don't hold up the call trying to get VINs and DL numbers live.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q91</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Any drivers with tickets or accidents in the last 3 years?"</span></div>
+  <div class="why">Must disclose before the carrier pulls MVRs. Better to know now than get surprised.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q92</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Do employees ever use personal vehicles for work?"</span></div>
+  <div class="why">Creates hired and non-owned auto exposure. If yes, need to add that coverage.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q93</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Any vehicles over 10,000 lbs -- like large trucks or bucket trucks?"</span></div>
+  <div class="why">DOT number requirements kick in at 10,001 lbs GVWR. Changes filing requirements.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q94</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Do family members ever drive company vehicles?"</span></div>
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q95</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Do you have GPS, dashcams, or any telematics in the vehicles?"</span></div>
+  <div class="why">Can help with pricing if yes.</div>
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q96</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Do you have a vehicle maintenance program?"</span></div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q97</span> <span class="tag tag-auto">Auto</span> <span class="q-text">"Do you know what carrier you're with right now for auto?"</span></div>
+  <div class="why">Auto is often with a different carrier than GL. Common to see Progressive or similar -- often overpriced for commercial accounts.</div>
+
+  <div class="question tagged-auto" data-tags="auto"><span class="q-number">Q98</span> <span class="tag tag-auto">Auto</span> <span class="q-text">If auto claims: "At-fault or not? Any injuries involved?"</span></div>
+</div>
+
+<!-- ===================== SECTION 10: CLOSE ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h2>CLOSE -- Documents & Next Steps</h2>
+    <span class="section-time">1-2 min</span>
+  </div>
+
+  <div class="talk-track quote">"That's everything I need from the call. You've been great. To get you the fastest quotes possible, I need a few things from you."</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q99</span> <span class="q-text">"Can I get your email so I can send you a list of what I'll need?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q100</span> <span class="q-text">"I'll need certificates of insurance -- one for each year going back to when you first got coverage."</span></div>
+  <div class="why">We need these to request loss runs from prior carriers. One COI per policy year.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q101</span> <span class="q-text">"And loss runs from your current or prior carrier -- last 3-5 years."</span></div>
+
+  <div class="talk-track quote">"I know that's a few things -- but getting these upfront saves us days of back-and-forth with the underwriters. I'm going to get to work on this right now. You should hear from me within 24-48 hours with options."</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q102</span> <span class="q-text">"Best way to reach you -- call, text, or email?"</span></div>
+  <div class="question" data-tags=""><span class="q-number">Q103</span> <span class="q-text">"What time works best if I need to call you back?"</span></div>
+
+  <div class="talk-track quote">"I'm going to text you right now so you have my number saved. That way you can just shoot me those documents whenever you have them."</div>
+  <div class="why">Text the client immediately so they save your number. Makes document follow-up frictionless.</div>
+
+  <div class="question" data-tags=""><span class="q-number">Q104</span> <span class="q-text">"What was your name again?" <em>(if speaking to someone other than the owner -- an office manager, consultant, etc.)</em></span></div>
+
+  <div class="talk-track quote">"Thanks [name]. I'll be in touch soon."</div>
+</div>
+
+<!-- ===================== SALES TIPS ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">&mdash;</span>
+    <h2>Sales Tips -- What Moves the Deal</h2>
+  </div>
+
+  <div class="instruction">These aren't questions -- they're moves that close deals on the first call.</div>
+
+  <div class="sales-tip">
+    <div class="sales-tip-title">Build rapport fast</div>
+    <div class="sales-tip-text">If you know the area, mention it. If you have something in common, use it. People buy from people they like.</div>
+  </div>
+  <div class="sales-tip">
+    <div class="sales-tip-title">Anchor on price</div>
+    <div class="sales-tip-text">If you have a comparable client, share the ballpark: "I have a tree service client doing similar volume -- they're paying about $12-13K a year for GL and equipment combined." Let the gap between what they're paying and what's possible sell itself.</div>
+  </div>
+  <div class="sales-tip">
+    <div class="sales-tip-title">Name the problem</div>
+    <div class="sales-tip-text">If they're getting ripped off, say so (diplomatically). "It sounds like you're paying way more than you should be." Puts you on their side.</div>
+  </div>
+  <div class="sales-tip">
+    <div class="sales-tip-title">Push bundling</div>
+    <div class="sales-tip-text">"Let me handle the workers comp too and I'll bundle everything together." More lines = stickier client = better pricing.</div>
+  </div>
+  <div class="sales-tip">
+    <div class="sales-tip-title">Close on urgency</div>
+    <div class="sales-tip-text">Always ask when they need coverage by. A deadline gives you leverage and a reason to follow up.</div>
+  </div>
+  <div class="sales-tip">
+    <div class="sales-tip-title">Turn gatekeepers into referral sources</div>
+    <div class="sales-tip-text">If you're talking to a business consultant, accountant, or office manager -- they have other clients who need insurance. Plant the seed: "If any of your other clients ever need help, I'd love to work with them."</div>
+  </div>
+</div>
+
+<!-- ===================== OBJECTION HANDLING ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">&mdash;</span>
+    <h2>Objection Handling</h2>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"How much is this going to cost?"</div>
+    <div class="objection-a">"I can't give you an exact number without running it through the markets, but I have tree service clients doing similar volume paying way less than you'd think. I'll have real numbers for you within [24-48 hours]."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"I'm paying $X a month and that seems like a lot."</div>
+    <div class="objection-a">"Let me take a look at what you're getting for that. A lot of times tree service guys end up with policies scattered across three or four carriers because the last agent didn't bundle them properly. Let me see what happens when we put it all together."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"I just need a COI."</div>
+    <div class="objection-a">"Totally get it. To issue a certificate we need an active policy first. Let me get you quoted and bound -- you'll have the COI same day."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"I don't have my VINs / driver info / equipment serials right now."</div>
+    <div class="objection-a">"No worries at all. Just text or email them to me when you have a minute. I'll start working with what we have right now. Email is angie@somainsure.com."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"My payroll company handles workers comp."</div>
+    <div class="objection-a">"I see that a lot -- Gusto, ADP, they bundle it in. But they're not insurance specialists, so the rates are usually higher and the coverage is basic. Let me quote it separately and you can compare. If I can't beat it, no harm done."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-q">"Why should I go with you guys?"</div>
+    <div class="objection-a">"We're a specialty brokerage -- tree service is one of our core verticals. We go to multiple markets at once, so you're not limited to one carrier. We push for the best coverage at the best price, and we handle all the paperwork. You just tell me about your business and we take it from there."</div>
+  </div>
+</div>
+
+<!-- ===================== COMPARISON TABLE ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">&mdash;</span>
+    <h2>GL vs WC vs Auto vs IM -- Quick Reference</h2>
+  </div>
+
+  <div class="comp-table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Topic</th><th>GL</th><th style="color:var(--wc)">WC</th><th style="color:var(--auto)">Auto</th><th style="color:var(--im)">Inland Marine</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Key forms</td><td>ACORD 125 + 126 + tree trimmer supp</td><td>ACORD 125 + 130</td><td>ACORD 125 + 127 + 129</td><td>ACORD 125 + 146</td></tr>
+        <tr><td>What drives pricing</td><td>Operations mix, revenue, sub %, claims</td><td>Class code, payroll, e-mod, claims</td><td>Vehicle count/type, drivers, MVRs</td><td>Equipment value, type, storage</td></tr>
+        <tr><td>Critical data</td><td>Revenue by op type, commercial/residential %, height, crane, chemicals</td><td>Payroll by class code, e-mod, owner inclusion/exclusion</td><td>VINs, driver DOBs + license #s, garaging address</td><td>Serial #s/VINs, replacement cost, ownership</td></tr>
+        <tr><td>Critical docs</td><td>Loss runs, COIs</td><td>WC loss runs, e-mod worksheet</td><td>Vehicle + driver lists, auto loss runs</td><td>Equipment list with values, titles</td></tr>
+        <tr><td>Class codes</td><td>Tree trimming, removal, landscaping (separate rates)</td><td>0106 (pruning), 2702 (logging), 2710 (removal)</td><td>Based on vehicle type + use</td><td>N/A -- per item</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== SCORE CARD ===================== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">&mdash;</span>
+    <h2>Post-Call Checklist</h2>
+  </div>
+
+  <div class="instruction">Click items to check them off after the call. If you're missing 5+ items from the core section, schedule a callback before submitting to markets.</div>
+
+  <h3>Core (Every Call)</h3>
+  <ul class="checklist">
+    <li>Business name verified and spelled</li>
+    <li>Owner name verified</li>
+    <li>Business address</li>
+    <li>Callback number + email</li>
+    <li>FEIN</li>
+    <li>Entity type (LLC, Corp, etc.)</li>
+    <li>Years in business + years of experience</li>
+    <li>Full-time or part-time</li>
+    <li>Operations breakdown with percentages totaling 100%</li>
+    <li>Commercial / residential split</li>
+    <li>States of operation</li>
+    <li>Tree climbing method (crew, bucket truck, sub)</li>
+    <li>Crane use (yes/no, subbed out, max height)</li>
+    <li>Pesticides / herbicides</li>
+    <li>Proximity: power lines, roads, structures</li>
+    <li>Safety program (yes/no)</li>
+    <li>ISA certified arborist (yes/no)</li>
+    <li>Employee count (FT / PT / leased)</li>
+    <li>W-2 or 1099</li>
+    <li>Annual payroll</li>
+    <li>Annual revenue</li>
+    <li>Subcontractor details (%, type, cost, insurance)</li>
+    <li>Current coverage / carrier / premium / limits</li>
+    <li>Continuous coverage 3+ years</li>
+    <li>Claims history (5 years)</li>
+    <li>Cancelled / declined / nonrenewed</li>
+    <li>Coverage needed + effective date + urgency</li>
+    <li>Best contact method + time</li>
+    <li>Texted client so they have your number</li>
+  </ul>
+
+  <h3><span class="tag tag-wc">WC</span> Additional Items</h3>
+  <ul class="checklist">
+    <li>Current WC carrier (or payroll provider)</li>
+    <li>Experience mod rate (e-mod)</li>
+    <li>Owners/officers: names, titles, ownership %, include/exclude</li>
+    <li>Employees under 16 or over 60</li>
+    <li>Seasonal or temporary workers</li>
+    <li>Employees working for other businesses</li>
+    <li>Overtime in payroll</li>
+    <li>Group transportation</li>
+    <li>Out-of-state travel</li>
+    <li>Subs with own WC</li>
+    <li>WC loss runs requested</li>
+    <li>Audit history / unpaid premium</li>
+  </ul>
+
+  <h3><span class="tag tag-auto">Auto</span> Additional Items</h3>
+  <ul class="checklist">
+    <li>Vehicle count + year / make / model</li>
+    <li>Owned / leased / financed</li>
+    <li>Garaging address</li>
+    <li>Vehicle use (hauling, sales, towing)</li>
+    <li>Trailers (type + count)</li>
+    <li>Vehicles over 10,000 lbs</li>
+    <li>Driver names + DOB + license # + state</li>
+    <li>Violations or accidents (3 years)</li>
+    <li>Personal vehicles used for work</li>
+    <li>Family members driving</li>
+    <li>GPS / dashcam / telematics</li>
+    <li>Vehicle maintenance program</li>
+    <li>Current auto carrier</li>
+    <li>Auto loss runs requested</li>
+    <li>Vehicle list with VINs requested</li>
+    <li>Driver list with DLs requested</li>
+  </ul>
+
+  <h3><span class="tag tag-im">IM</span> Additional Items</h3>
+  <ul class="checklist">
+    <li>Equipment list (stump grinders, chippers, skid steers, etc.)</li>
+    <li>Year / make / model / serial # for each</li>
+    <li>Replacement cost or current value</li>
+    <li>Owned or leased</li>
+    <li>Titles / proof of ownership requested</li>
+  </ul>
+
+  <h3>Documents Requested</h3>
+  <ul class="checklist">
+    <li>COIs -- one per year of coverage</li>
+    <li>Loss runs (GL, 3-5 years)</li>
+    <li><span class="tag tag-wc">WC</span> WC loss runs (if different carrier)</li>
+    <li><span class="tag tag-wc">WC</span> E-mod worksheet</li>
+    <li><span class="tag tag-auto">Auto</span> Vehicle list with VINs</li>
+    <li><span class="tag tag-auto">Auto</span> Driver list with DL numbers</li>
+    <li><span class="tag tag-auto">Auto</span> Auto loss runs (4 years)</li>
+    <li><span class="tag tag-auto">Auto</span> Copies of driver's licenses</li>
+    <li><span class="tag tag-im">IM</span> Equipment list with serial #s + values</li>
+    <li><span class="tag tag-im">IM</span> Equipment titles / proof of ownership</li>
+  </ul>
+</div>
+
+</div><!-- /container -->
+
+<script>
+const filters = { wc: true, auto: true, im: true };
+const tagClassMap = { wc: 'active-wc', auto: 'active-auto', im: 'active-im' };
+
+function toggleFilter(btn) {
+  const f = btn.dataset.filter;
+  filters[f] = !filters[f];
+  btn.classList.toggle(tagClassMap[f]);
+  applyFilters();
+}
+
+function applyFilters() {
+  let visible = 0;
+  document.querySelectorAll('.question[data-tags]').forEach(el => {
+    const tags = el.dataset.tags.split(' ').filter(Boolean);
+    if (tags.length === 0) { el.classList.remove('hidden'); visible++; return; }
+    const show = tags.every(t => filters[t]);
+    el.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  document.getElementById('q-count').textContent = visible;
+}
+
+document.querySelectorAll('.checklist li').forEach(li => {
+  li.addEventListener('click', () => li.classList.toggle('checked'));
+});
+</script>
+
+</body>
+</html>
