@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Analysis Report - Soma Insurance Services</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232733;
+    --border: #2e3345;
+    --text: #e1e4ed;
+    --text-muted: #8b90a0;
+    --accent: #6c8cff;
+    --accent-dim: #3d5199;
+    --green: #34d399;
+    --green-dim: rgba(52,211,153,0.12);
+    --yellow: #fbbf24;
+    --yellow-dim: rgba(251,191,36,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+    --orange: #fb923c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* Header */
+  .report-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+
+  .report-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .report-header .subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    margin-top: 32px;
+    color: var(--text);
+  }
+
+  p, li {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  /* Insight cards */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .insight-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(108,140,255,0.12);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .insight-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Stat cards */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -1px;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.accent { color: var(--accent); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(108,140,255,0.04); }
+
+  td.business { color: var(--text); font-weight: 500; white-space: normal; min-width: 180px; }
+  td.premium { color: var(--green); font-weight: 600; font-variant-numeric: tabular-nums; }
+  td.money { font-variant-numeric: tabular-nums; }
+  td.rate { font-weight: 600; }
+  td.rate.high { color: var(--green); }
+  td.rate.mid { color: var(--yellow); }
+  td.rate.low { color: var(--red); }
+
+  .tier-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .tier-1 { background: var(--green-dim); color: var(--green); }
+  .tier-2 { background: var(--yellow-dim); color: var(--yellow); }
+  .tier-3 { background: var(--red-dim); color: var(--red); }
+
+  /* Callout box */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+
+  .callout p { margin: 0; font-size: 14px; }
+  .callout .callout-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .callout.warn { border-left-color: var(--yellow); }
+  .callout.warn .callout-title { color: var(--yellow); }
+
+  /* Scoring table */
+  .score-table td:first-child {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .score-table td:nth-child(2) {
+    color: var(--accent);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* Question cards */
+  .question-cards {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .q-num {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .q-detail {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Footer */
+  .report-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    margin-top: 48px;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 24px 16px; }
+    .report-header h1 { font-size: 22px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .stat-value { font-size: 22px; }
+    table { font-size: 12px; }
+    thead th, tbody td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="report-header">
+    <h1>Premium Analysis Report</h1>
+    <div class="subtitle">Soma Insurance Services &middot; All bound deals through April 2026 &middot; Prepared April 9, 2026</div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="section">
+    <div class="section-label">Executive Summary</div>
+    <h2>What Separates a $15K Deal from a $500 One</h2>
+    <p>We analyzed all 43 won deals to identify the patterns that predict high-premium accounts at first contact. Here are the five findings that matter most.</p>
+
+    <div class="insights-grid">
+      <div class="insight-card">
+        <div class="insight-num">1</div>
+        <div><p><strong>Three industries account for 90% of premium revenue.</strong> Construction/trades, security guard services, and restaurant/bar generated $330K of $356K total. Everything else combined contributed $26K across 12 deals.</p></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">2</div>
+        <div><p><strong>Labor spend is the single strongest predictor.</strong> Combined W-2 payroll + subcontractor costs. Deals with $200K+ labor spend averaged $21K premium with a 100% hit rate for crossing $3K. Deals with $0 averaged $1,800.</p></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">3</div>
+        <div><p><strong>Revenue only predicts premium in high-hazard industries.</strong> A $1.2M wig store wrote $471. A $120K security company wrote $15,260. Filter to construction/security/food and $1M+ revenue hits $3K+ 100% of the time.</p></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">4</div>
+        <div><p><strong>Multi-line deals are nearly automatic $3K+ accounts.</strong> Leads needing GL+WC or any combination crossed $3K 90% of the time, averaging $14,200. Single-line GL in low-hazard trades averaged $1,100.</p></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">5</div>
+        <div><p><strong>Vendor lead data is wrong on the fields that matter most.</strong> Payroll, employee count, and revenue from Tivly/Bold Penguin were materially inaccurate in over half of deals. The intake call is the only reliable source for qualification.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Portfolio Overview -->
+  <div class="section">
+    <div class="section-label">Section 1</div>
+    <h2>The Portfolio</h2>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">43</div>
+        <div class="stat-label">Deals Bound</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green">$356K</div>
+        <div class="stat-label">Total Premium</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$8,300</div>
+        <div class="stat-label">Avg Premium</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$3,100</div>
+        <div class="stat-label">Median Premium</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value accent">27</div>
+        <div class="stat-label">Deals $3K+</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$85K</div>
+        <div class="stat-label">Largest Deal</div>
+      </div>
+    </div>
+
+    <h3>Premium Distribution</h3>
+    <p>The book is top-heavy. The top 10 deals (23% of accounts) represent 69% of total revenue.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tier</th><th>Premium Range</th><th>Deals</th><th>Total Premium</th><th>% of Book</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tier-label tier-1">Tier 1</span></td><td>$10,000+</td><td>10</td><td class="premium">$244,700</td><td>69%</td></tr>
+          <tr><td><span class="tier-label tier-2">Tier 2</span></td><td>$3,000 &ndash; $9,999</td><td>17</td><td class="premium">$92,100</td><td>26%</td></tr>
+          <tr><td><span class="tier-label tier-3">Tier 3</span></td><td>Under $3,000</td><td>16</td><td class="premium">$19,100</td><td>5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Industry Breakdown</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Industry</th><th>Deals</th><th>Total Premium</th><th>Avg Premium</th><th>% of Revenue</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Construction / Trades</td><td>16</td><td class="premium">$173,000</td><td class="money">$10,800</td><td>49%</td></tr>
+          <tr><td class="business">Restaurant / Bar / Food</td><td>5</td><td class="premium">$55,000</td><td class="money">$11,000</td><td>15%</td></tr>
+          <tr><td class="business">Security Guard</td><td>6</td><td class="premium">$51,700</td><td class="money">$8,600</td><td>15%</td></tr>
+          <tr><td class="business">Retail / Property / Services</td><td>12</td><td class="premium">$20,600</td><td class="money">$1,700</td><td>6%</td></tr>
+          <tr><td class="business">Unmatched (no lead data)</td><td>4</td><td class="premium">$17,000</td><td class="money">$4,200</td><td>5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- What Drives Premium -->
+  <div class="section">
+    <div class="section-label">Section 2</div>
+    <h2>What Drives Premium</h2>
+
+    <h3>2.1 Labor Spend (Payroll + Subcontractor Costs)</h3>
+    <p>Combined W-2 payroll and subcontractor payments. This is the strongest single predictor because payroll rates WC and sub costs rate GL for general contractors.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Labor Spend</th><th>Deals</th><th>Avg Premium</th><th>Median</th><th>$3K+ Rate</th></tr></thead>
+        <tbody>
+          <tr><td class="business">$200K+</td><td>9</td><td class="money">$19,400</td><td class="money">$15,900</td><td class="rate high">89%</td></tr>
+          <tr><td class="business">$100K &ndash; $200K</td><td>7</td><td class="money">$8,300</td><td class="money">$3,700</td><td class="rate high">71%</td></tr>
+          <tr><td class="business">$25K &ndash; $100K</td><td>8</td><td class="money">$2,700</td><td class="money">$2,600</td><td class="rate low">25%</td></tr>
+          <tr><td class="business">Under $25K</td><td>7</td><td class="money">$1,600</td><td class="money">$1,500</td><td class="rate low">14%</td></tr>
+          <tr><td class="business">$0</td><td>9</td><td class="money">$1,800</td><td class="money">$1,200</td><td class="rate mid">33%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Within high-hazard industries only</strong>, the $200K+ band becomes a perfect predictor:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Labor Spend (High-Hazard)</th><th>Deals</th><th>Avg Premium</th><th>$3K+ Rate</th></tr></thead>
+        <tbody>
+          <tr><td class="business">$200K+</td><td>8</td><td class="money">$21,100</td><td class="rate high">100%</td></tr>
+          <tr><td class="business">$100K &ndash; $200K</td><td>5</td><td class="money">$10,500</td><td class="rate high">80%</td></tr>
+          <tr><td class="business">Under $100K</td><td>14</td><td class="money">$3,200</td><td class="rate mid">36%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Key Outlier</div>
+      <p>Resurgent Brokerage had $200K in sub costs but wrote only $353. The subs were doing face-to-face marketing -- zero bodily injury exposure. Labor spend only predicts premium when the labor is doing something carriers consider hazardous.</p>
+    </div>
+
+    <h3>2.2 Revenue</h3>
+    <p>Revenue is noisy across the full book but becomes a strong signal when filtered to high-hazard industries.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Revenue</th><th colspan="2">All Industries</th><th colspan="2">High-Hazard Only</th><th>Improvement</th></tr>
+        <tr><th></th><th>Avg Premium</th><th>$3K+ Rate</th><th>Avg Premium</th><th>$3K+ Rate</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="business">$1M+</td><td class="money">$10,800</td><td class="rate mid">64%</td><td class="money">$20,300</td><td class="rate high">100%</td><td class="rate high">+36 pts</td></tr>
+          <tr><td class="business">$500K &ndash; $1M</td><td class="money">$6,400</td><td class="rate mid">63%</td><td class="money">$10,200</td><td class="rate high">80%</td><td class="rate high">+17 pts</td></tr>
+          <tr><td class="business">$200K &ndash; $500K</td><td class="money">$3,200</td><td class="rate mid">50%</td><td class="money">$4,100</td><td class="rate high">71%</td><td class="rate high">+21 pts</td></tr>
+          <tr><td class="business">Under $200K</td><td class="money">$3,000</td><td class="rate mid">38%</td><td class="money">$4,600</td><td class="rate mid">50%</td><td>+12 pts</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The deals polluting the full-book signal: Hairline Illusions ($1.2M revenue, $471), Rick Flynn ($1.3M, $1,567), Little Dots And Legs ($800K, $964). All low-hazard businesses where revenue has no bearing on insurance cost.</p>
+
+    <h3>2.3 Number of Coverage Lines</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Lines</th><th>Deals</th><th>Avg Premium</th><th>$3K+ Rate</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Multi-line (GL+WC, GL+LL, etc.)</td><td>10</td><td class="money">$14,200</td><td class="rate high">90%</td></tr>
+          <tr><td class="business">Single line</td><td>33</td><td class="money">$4,100</td><td class="rate mid">37%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.4 The Two-Variable Model (High-Hazard Only)</h3>
+    <p>Within construction, security, and food/liquor, crossing labor spend with revenue:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Revenue $500K+</th><th>Revenue Under $500K</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Labor $100K+</td><td>Avg $17,800 &middot; <span style="color:var(--green);font-weight:600">100% $3K+</span> (10 deals)</td><td>Avg $9,900 &middot; <span style="color:var(--green);font-weight:600">100% $3K+</span> (3 deals)</td></tr>
+          <tr><td class="business">Labor Under $100K</td><td>Avg $5,800 &middot; <span style="color:var(--yellow);font-weight:600">67% $3K+</span> (3 deals)</td><td>Avg $2,800 &middot; <span style="color:var(--red);font-weight:600">33% $3K+</span> (9 deals)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Key Finding</div>
+      <p>When labor spend is $100K+ in a high-hazard trade, the deal hits $3K+ <strong>every single time</strong> regardless of revenue. Labor spend is the dominant variable; revenue only matters when labor is low.</p>
+    </div>
+  </div>
+
+  <!-- Practical Application -->
+  <div class="section">
+    <div class="section-label">Section 3</div>
+    <h2>Practical Application</h2>
+
+    <h3>The Three Questions That Matter on an Intake Call</h3>
+    <div class="question-cards">
+      <div class="question-card">
+        <div class="q-num">1</div>
+        <div>
+          <div class="q-text">"What does your business do?"</div>
+          <p class="q-detail">Construction, security, or restaurant/bar = proceed. Anything else = likely sub-$2K unless specialty line.</p>
+        </div>
+      </div>
+      <div class="question-card">
+        <div class="q-num">2</div>
+        <div>
+          <div class="q-text">"Between your W-2 payroll and what you pay subcontractors, how much total are you spending on labor annually?"</div>
+          <p class="q-detail">$100K+ = fast-track, guaranteed $3K+. $200K+ = high-priority, average $21K deal.</p>
+        </div>
+      </div>
+      <div class="question-card">
+        <div class="q-num">3</div>
+        <div>
+          <div class="q-text">"What types of coverage do you need?"</div>
+          <p class="q-detail">GL+WC or any multi-line combo = 90% chance of $3K+. Single GL = weaker.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Lead Scoring Model</h3>
+    <div class="table-wrap">
+      <table class="score-table">
+        <thead><tr><th>Signal</th><th>Points</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Labor Spend $200K+ (payroll + subs)</td><td>+4</td><td>89% hit rate, avg $19K premium</td></tr>
+          <tr><td>Labor Spend $100K&ndash;$200K</td><td>+2</td><td>71% hit rate, avg $8K premium</td></tr>
+          <tr><td>High-hazard industry (construction, security, restaurant/bar)</td><td>+3</td><td>75% $3K+ rate as a standalone signal</td></tr>
+          <tr><td>Needs 2+ coverage lines</td><td>+3</td><td>90% hit rate for $3K+</td></tr>
+          <tr><td>Specialty line (liquor liability, PL, E&amp;O, inland marine)</td><td>+2</td><td>Higher premium floor on specialty</td></tr>
+          <tr><td>Revenue $500K+</td><td>+1</td><td>Confirms scale, weak alone</td></tr>
+          <tr><td>Prior insurance / switching agents</td><td>+1</td><td>Established operation signal</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" style="border-left:3px solid var(--green)">
+        <div class="stat-value green">6+</div>
+        <div class="stat-label">Very likely $5K+</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--yellow)">
+        <div class="stat-value" style="color:var(--yellow)">4&ndash;5</div>
+        <div class="stat-label">Likely $3K+</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--orange)">
+        <div class="stat-value" style="color:var(--orange)">2&ndash;3</div>
+        <div class="stat-label">Could go either way</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--red)">
+        <div class="stat-value" style="color:var(--red)">0&ndash;1</div>
+        <div class="stat-label">Likely under $1.5K</div>
+      </div>
+    </div>
+
+    <h3>Scoring Examples (Actual Deals)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Deal</th><th>Breakdown</th><th>Score</th><th>Actual Premium</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Happy Coating</td><td>Epoxy coating +3, $700K labor +4, WC line +3</td><td style="color:var(--green);font-weight:700;text-align:center">10</td><td class="premium">$20,988</td></tr>
+          <tr><td class="business">Viva Ventures Vista</td><td>Bar +3, $125K labor +2, GL+LL+AB+WC +3, liquor +2</td><td style="color:var(--green);font-weight:700;text-align:center">10</td><td class="premium">$31,188</td></tr>
+          <tr><td class="business">1st Response Plumbing</td><td>Plumbing +3, $350K subs +4, prior ins +1</td><td style="color:var(--green);font-weight:700;text-align:center">8</td><td class="premium">$15,905</td></tr>
+          <tr><td class="business">Elite Law &amp; Protection</td><td>Security +3, $218K labor +4</td><td style="color:var(--green);font-weight:700;text-align:center">7</td><td class="premium">$15,260</td></tr>
+          <tr><td class="business">Middletown African Market</td><td>Grocery, $0 labor, $600K rev +1</td><td style="color:var(--red);font-weight:700;text-align:center">1</td><td class="premium">$4,618</td></tr>
+          <tr><td class="business">Hairline Illusions</td><td>Retail, $0 labor, GL only</td><td style="color:var(--red);font-weight:700;text-align:center">0</td><td class="premium">$471</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><em>Middletown is a false negative at score 1 -- BOP deals with significant property coverage can exceed $3K without labor or hazard signals. These are edge cases driven by property value.</em></p>
+  </div>
+
+  <!-- Data Quality -->
+  <div class="section">
+    <div class="section-label">Section 4</div>
+    <h2>Data Quality Warning</h2>
+    <p>Vendor lead data from Tivly, Bold Penguin, and Seal was materially wrong on the fields that drive qualification in over half of verified deals.</p>
+
+    <div class="callout warn">
+      <div class="callout-title">Implication</div>
+      <p>Never qualify or disqualify a lead based on vendor data alone. The intake call is the only reliable source for payroll, employee count, and operational details.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Deal</th><th>Vendor Data</th><th>Reality (Intake Call)</th><th>Impact</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Elite Law &amp; Protection</td><td>$0 payroll, 0 employees</td><td>$218K payroll, 24/7 post</td><td>Would have been scored as low-value</td></tr>
+          <tr><td class="business">Montage Coffee</td><td>0 employees, $0 payroll</td><td>8 employees, $180K payroll</td><td>Would have been scored as solo operator</td></tr>
+          <tr><td class="business">Casanova Development</td><td>0 yrs experience</td><td>Experienced GC, new entity</td><td>Would have been flagged uninsurable</td></tr>
+          <tr><td class="business">Ace Security</td><td>$10K revenue</td><td>$25K revenue (growing rapidly)</td><td>Understated by 60%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Full Deal Register -->
+  <div class="section">
+    <div class="section-label">Section 5</div>
+    <h2>Full Deal Register</h2>
+    <p>All 43 won deals sorted by premium. Labor spend = payroll + subcontractor costs combined.</p>
+
+    <span class="tier-label tier-1">Tier 1: $10,000+</span>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Business</th><th>Premium</th><th>Industry</th><th>State</th><th>Revenue</th><th>Labor Spend</th><th>Emp</th><th>Lines</th><th>Market</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="business">Memet Landscaping</td><td class="premium">$85,000</td><td>Landscaping/Tree</td><td>FL</td><td>large</td><td class="money">large</td><td>40+</td><td>GL+WC+Auto+IM</td><td>Amerisafe, RT</td></tr>
+          <tr><td>2</td><td class="business">Viva Ventures Vista</td><td class="premium">$31,188</td><td>Bar (liquor)</td><td>CA</td><td class="money">$600K</td><td class="money">$125K</td><td>7</td><td>GL+LL+AB+WC</td><td>Golden Bear, AmTrust</td></tr>
+          <tr><td>3</td><td class="business">Happy Coating</td><td class="premium">$20,988</td><td>Epoxy Coating</td><td>CT</td><td class="money">$5M</td><td class="money">$700K</td><td>19</td><td>WC</td><td>USG/Hartford</td></tr>
+          <tr><td>4</td><td class="business">Alpha Site Development</td><td class="premium">$20,078</td><td>Site Dev / GC</td><td>FL</td><td class="money">$2.3M</td><td class="money">$600K+</td><td>13</td><td>WC</td><td>Wholesure</td></tr>
+          <tr><td>5</td><td class="business">Barrier Builders</td><td class="premium">$17,155</td><td>Roofing Sales</td><td>FL</td><td class="money">$2.6M</td><td class="money">$260K+</td><td>10</td><td>WC (PEO)</td><td>Frankcrum</td></tr>
+          <tr><td>6</td><td class="business">Willystone</td><td class="premium">$15,970</td><td>Paver Install</td><td>FL</td><td class="money">$1.07M</td><td class="money">$184K</td><td>4</td><td>Inland Marine</td><td>RT Specialty</td></tr>
+          <tr><td>7</td><td class="business">1st Response Plumbing</td><td class="premium">$15,905</td><td>Plumbing</td><td>TX</td><td class="money">$1.15M</td><td class="money">$350K subs</td><td>0 W2</td><td>GL</td><td>Next Ergo</td></tr>
+          <tr><td>8</td><td class="business">Elite Law &amp; Protection</td><td class="premium">$15,260</td><td>Security Guard</td><td>NJ</td><td class="money">$120K</td><td class="money">$218K</td><td>2</td><td>GL</td><td>Wholesure</td></tr>
+          <tr><td>9</td><td class="business">Ganesh Treat (DQ)</td><td class="premium">$13,069</td><td>Fast Food Franchise</td><td>FL</td><td class="money">$1.45M</td><td class="money">$265K</td><td>12</td><td>GL ($2M)</td><td>Normandy/Great Am</td></tr>
+          <tr><td>10</td><td class="business">ArmorPoint Protection</td><td class="premium">$10,094</td><td>Security Patrol</td><td>CA</td><td class="money">&mdash;</td><td class="money">&mdash;</td><td>4</td><td>Comm Auto</td><td>RT/NICO</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="tier-label tier-2">Tier 2: $3,000 &ndash; $9,999</span>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Business</th><th>Premium</th><th>Industry</th><th>State</th><th>Revenue</th><th>Labor Spend</th><th>Emp</th><th>Lines</th><th>Market</th></tr></thead>
+        <tbody>
+          <tr><td>11</td><td class="business">Ovation Roofing</td><td class="premium">$9,144</td><td>Roofing</td><td>TX</td><td class="money">$800K</td><td class="money">high (100% sub)</td><td>0</td><td>GL XS</td><td>WholeSure/Baleen</td></tr>
+          <tr><td>12</td><td class="business">The Good Flea</td><td class="premium">$6,863</td><td>Retail/Flea</td><td>&mdash;</td><td class="money">&mdash;</td><td class="money">&mdash;</td><td>&mdash;</td><td>GL</td><td>Next</td></tr>
+          <tr><td>13</td><td class="business">Ace Security</td><td class="premium">$6,099</td><td>Security Guard</td><td>PA</td><td class="money">$25K</td><td class="money">$10K</td><td>1</td><td>GL</td><td>RT/Century Surety</td></tr>
+          <tr><td>14</td><td class="business">T&amp;T Surfaces</td><td class="premium">$5,092</td><td>Concrete Overlay</td><td>FL</td><td class="money">$250K</td><td class="money">$48K</td><td>0&rarr;1</td><td>WC</td><td>WholeSure/StarStone</td></tr>
+          <tr><td>15</td><td class="business">Hangs Spa</td><td class="premium">$4,704</td><td>Med Spa</td><td>FL</td><td class="money">$700K</td><td class="money">$0</td><td>0</td><td>PL+GL</td><td>Burns &amp; Wilcox</td></tr>
+          <tr><td>16</td><td class="business">Middletown African Mkt</td><td class="premium">$4,618</td><td>Grocery</td><td>DE</td><td class="money">$600K</td><td class="money">$0</td><td>2</td><td>BOP</td><td>NEXT</td></tr>
+          <tr><td>17</td><td class="business">Mi Casa Construction</td><td class="premium">$4,300</td><td>Residential GC</td><td>TX</td><td class="money">$500K</td><td class="money">$150K subs</td><td>0</td><td>GL XS</td><td>WholeSure/Kinsale</td></tr>
+          <tr><td>18</td><td class="business">Storm Roofing</td><td class="premium">$3,868</td><td>Roofing</td><td>NY</td><td class="money">$200K</td><td class="money">&mdash;</td><td>2</td><td>GL</td><td>ISC</td></tr>
+          <tr><td>19</td><td class="business">Owner Priority Advisory</td><td class="premium">$3,735</td><td>Consulting</td><td>NY</td><td class="money">$1M</td><td class="money">$0</td><td>0</td><td>E&amp;O</td><td>BiBerk</td></tr>
+          <tr><td>20</td><td class="business">Arseas Security</td><td class="premium">$3,485</td><td>Security Guard</td><td>GA</td><td class="money">&mdash;</td><td class="money">&mdash;</td><td>&mdash;</td><td>WC</td><td>WholeSure</td></tr>
+          <tr><td>21</td><td class="business">Harris Custom</td><td class="premium">$3,445</td><td>Construction</td><td>FL</td><td class="money">$1M</td><td class="money">$208K</td><td>5</td><td>GL</td><td>Wholesure</td></tr>
+          <tr><td>22</td><td class="business">Best Restoration</td><td class="premium">$3,304</td><td>Restoration</td><td>&mdash;</td><td class="money">&mdash;</td><td class="money">&mdash;</td><td>&mdash;</td><td>GL XS</td><td>Wholesure/Kinsale</td></tr>
+          <tr><td>23</td><td class="business">BZBK LLC</td><td class="premium">$3,105</td><td>Vape Shop</td><td>CA</td><td class="money">$1.5M</td><td class="money">$36K</td><td>3</td><td>GL+WC</td><td>RT/Markel, AmTrust</td></tr>
+          <tr><td>24</td><td class="business">Montage Coffee</td><td class="premium">$3,045</td><td>Coffee Shop</td><td>NY</td><td class="money">$400K</td><td class="money">$180K</td><td>8</td><td>WC</td><td>AmTrust</td></tr>
+          <tr><td>25</td><td class="business">Ponist Custom Const</td><td class="premium">$3,012</td><td>Remodeling</td><td>NC</td><td class="money">$300K</td><td class="money">$152K</td><td>0 W2</td><td>WC</td><td>WholeSure/BiBerk</td></tr>
+          <tr><td>26</td><td class="business">Brewer Plumbing (other)</td><td class="premium">$2,886</td><td>Plumbing</td><td>&mdash;</td><td class="money">&mdash;</td><td class="money">&mdash;</td><td>&mdash;</td><td>GL</td><td>Next-Ergo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="tier-label tier-3">Tier 3: Under $3,000</span>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Business</th><th>Premium</th><th>Industry</th><th>State</th><th>Revenue</th><th>Labor Spend</th><th>Emp</th><th>Lines</th><th>Market</th></tr></thead>
+        <tbody>
+          <tr><td>27</td><td class="business">Tiny Feet Learning</td><td class="premium">$2,680</td><td>Daycare</td><td>FL</td><td class="money">$400K</td><td class="money">$90K</td><td>6</td><td>GL</td><td>NEXT</td></tr>
+          <tr><td>28</td><td class="business">Casanova Development</td><td class="premium">$2,500</td><td>GC</td><td>FL</td><td class="money">$200K</td><td class="money">~$100K+ subs</td><td>0</td><td>GL</td><td>Normandy</td></tr>
+          <tr><td>29</td><td class="business">Golden Hands Health</td><td class="premium">$2,483</td><td>Home Health</td><td>CA</td><td class="money">&mdash;</td><td class="money">$40K</td><td>few</td><td>WC</td><td>Wholesure/Core</td></tr>
+          <tr><td>30</td><td class="business">Brewer Brothers</td><td class="premium">$2,080</td><td>Plumbing</td><td>TX</td><td class="money">$50-60K</td><td class="money">$20K subs</td><td>0</td><td>GL</td><td>Next</td></tr>
+          <tr><td>31</td><td class="business">CJES LLC</td><td class="premium">$1,979</td><td>General Contracting</td><td>NJ</td><td class="money">$60K</td><td class="money">$45K</td><td>1</td><td>WC</td><td>BTIS/AIG</td></tr>
+          <tr><td>32</td><td class="business">Godly LLC</td><td class="premium">$1,758</td><td>Pressure Washing</td><td>FL</td><td class="money">$500K</td><td class="money">$60K</td><td>1&rarr;2</td><td>WC</td><td>WholeSure/Starstone</td></tr>
+          <tr><td>33</td><td class="business">Cortland Smoke &amp; Vape</td><td class="premium">$1,672</td><td>Smoke/Vape</td><td>NY</td><td class="money">$350K</td><td class="money">$100K</td><td>2</td><td>GL</td><td>WholeSure/Blitz</td></tr>
+          <tr><td>34</td><td class="business">Rick Flynn</td><td class="premium">$1,567</td><td>Lessor/Property</td><td>FL</td><td class="money">$1.3M</td><td class="money">$0</td><td>0</td><td>BOP</td><td>PathPoint</td></tr>
+          <tr><td>35</td><td class="business">Key Protective Services</td><td class="premium">$1,500</td><td>Security Guard</td><td>TX</td><td class="money">$10K</td><td class="money">$0</td><td>0</td><td>GL</td><td>RT Specialty</td></tr>
+          <tr><td>36</td><td class="business">T E S Clem Express</td><td class="premium">$1,150</td><td>Stump Grinding</td><td>FL</td><td class="money">$25K</td><td class="money">$0</td><td>0</td><td>GL</td><td>NEXT</td></tr>
+          <tr><td>37</td><td class="business">Little Dots And Legs</td><td class="premium">$964</td><td>Dog Breeder</td><td>CA</td><td class="money">$800K</td><td class="money">$14K subs</td><td>0</td><td>GL</td><td>Chubb</td></tr>
+          <tr><td>38</td><td class="business">Jax Pro Hauling</td><td class="premium">$646</td><td>Hauling</td><td>FL</td><td class="money">&mdash;</td><td class="money">$0</td><td>0</td><td>GL</td><td>Next</td></tr>
+          <tr><td>39</td><td class="business">18 Fools</td><td class="premium">$575</td><td>Restaurant (temp)</td><td>NJ</td><td class="money">$0 curr</td><td class="money">$0</td><td>0</td><td>GL (temp)</td><td>Markel/Evanston</td></tr>
+          <tr><td>40</td><td class="business">Hairline Illusions</td><td class="premium">$471</td><td>Wig Store</td><td>FL</td><td class="money">$1.2M</td><td class="money">$0</td><td>0</td><td>GL</td><td>Coterie</td></tr>
+          <tr><td>41</td><td class="business">Sag Harbor Garden</td><td class="premium">$455</td><td>Garden Center</td><td>NY</td><td class="money">$350K</td><td class="money">$25K (3 mo)</td><td>3</td><td>WC (3 mo)</td><td>AmTrust</td></tr>
+          <tr><td>42</td><td class="business">Resurgent Brokerage</td><td class="premium">$353</td><td>Direct Marketing</td><td>PA</td><td class="money">$200K</td><td class="money">$200K subs</td><td>0</td><td>GL</td><td>Next</td></tr>
+          <tr><td>43</td><td class="business">Titan Maintenance</td><td class="premium">$350</td><td>Groundskeeping</td><td>NY</td><td class="money">$220K</td><td class="money">$0</td><td>0</td><td>IM</td><td>BTIS/Navigators</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="section">
+    <div class="section-label">Section 6</div>
+    <h2>Methodology</h2>
+    <ul>
+      <li><strong>Data sources:</strong> Supabase leads table, lead interactions (call transcripts, emails, texts), and Slack #wins channel.</li>
+      <li><strong>Interaction-first verification:</strong> For every deal with a matching lead, business details were verified against intake call transcripts. When vendor lead data conflicted with information from calls, the call data was used.</li>
+      <li><strong>Labor spend:</strong> W-2 payroll + 1099 contractor payments + subcontractor costs. Where exact sub costs were not stated but operations were described as "100% subcontracted," context was noted rather than estimated.</li>
+      <li><strong>Unmatched deals:</strong> 4 deals had no matching lead in Supabase (Best Restoration Solutions, Arseas Security, The Good Flea, Brewer Plumbing). Included in totals but excluded from variable-level analysis.</li>
+      <li><strong>Premium figures:</strong> Annual unless noted. ArmorPoint's DB entry showed a 6-month figure; the #wins channel confirmed the annual placement at $10,094 through RT/NICO.</li>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div class="report-footer">
+    Soma Insurance Services &middot; Premium Analysis Report &middot; April 2026 &middot; Data verified against intake call transcripts and Slack #wins channel
+  </div>
+
+</div>
+</body>
+</html>
