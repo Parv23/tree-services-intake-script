@@ -688,9 +688,96 @@
     </div>
   </div>
 
-  <!-- Methodology -->
+  <!-- Conversational Signals -->
   <div class="section">
     <div class="section-label">Section 6</div>
+    <h2>Conversational Signals from Intake Calls</h2>
+    <p>We analyzed full call transcripts across all won deals to identify qualitative patterns that predict premium size beyond the quantitative fields. These signals are detectable within the first 60 seconds of an intake call.</p>
+
+    <h3>Why They're Buying (Trigger Event)</h3>
+    <p>The single strongest conversational signal. The reason someone picks up the phone tells you what the deal is worth.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Trigger Event</th><th>Avg Premium</th><th>What You Hear</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Business acquisition / new contract</td><td class="premium">$17,600</td><td>"I am purchasing a bar right now" / "We just signed a contract"</td></tr>
+          <tr><td class="business">Fleeing bad carrier / broker</td><td class="premium">$15,800</td><td>"They messed the policy up twice" / "Rates went through the roof"</td></tr>
+          <tr><td class="business">Price shopping on renewal</td><td class="premium">$9,400</td><td>"The price" / "We wanna get better rates"</td></tr>
+          <tr><td class="business">Non-renewal / dropped by carrier</td><td class="money">$5,400</td><td>"They decided not to renew" / "They can't cover our services"</td></tr>
+          <tr><td class="business">Landlord / contract compliance</td><td class="money">$3,800</td><td>"I just signed a lease with the landlord" / "My client is asking for a certificate"</td></tr>
+          <tr><td class="business">License maintenance / minimum</td><td style="color:var(--red)">$1,300</td><td>"Just to keep the license going" / "State minimum insurance"</td></tr>
+          <tr><td class="business">Restarting dormant business</td><td style="color:var(--red)">$350</td><td>"The business wasn't doing nothing for a while"</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How They Describe Their Business</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Description Style</th><th>Avg Premium</th><th>What You Hear</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Precise numbers, trade-specific language</td><td class="premium">$14,200</td><td>"70% painting, 20% sales, 10% office" / knows WC class codes</td></tr>
+          <tr><td class="business">Clear but general</td><td class="money">$5,100</td><td>Can answer questions but doesn't volunteer detail</td></tr>
+          <tr><td class="business">Vague, guessing, confused</td><td style="color:var(--red)">$1,200</td><td>"I threw that number out" / can't distinguish revenue from payroll</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Growth vs. Survival Language</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Growth Signal</th><th>Avg Premium</th><th>What You Hear</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Active expansion</td><td class="premium">$12,800</td><td>"I have another shop we're taking over" / "Hiring in 60-90 days"</td></tr>
+          <tr><td class="business">Credible future scale</td><td class="premium">$9,100</td><td>"What if I end up running $4M this year?"</td></tr>
+          <tr><td class="business">Stable / maintaining</td><td class="money">$3,400</td><td>Same size for years, no expansion plans</td></tr>
+          <tr><td class="business">Contracting / survival</td><td style="color:var(--red)">$1,100</td><td>"Things are kinda slow, had to let everybody go"</td></tr>
+          <tr><td class="business">Explicitly anti-growth</td><td style="color:var(--red)">$750</td><td>"Just me and the customer" / "I have a full-time job"</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>External Stakeholder Pressure</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Stakeholder References</th><th>Avg Premium</th><th>What You Hear</th></tr></thead>
+        <tbody>
+          <tr><td class="business">Multiple stakeholders (franchise HQ, landlords, clients, lenders)</td><td class="premium">$15,600</td><td>DQ corporate requires $2M limits + AI. Landlord lease requires GL. Equipment lessor requires IM.</td></tr>
+          <tr><td class="business">Single stakeholder</td><td class="money">$3,900</td><td>One landlord or one client asking for a COI</td></tr>
+          <tr><td class="business">No external pressure</td><td style="color:var(--red)">$1,600</td><td>Buying for their own reasons, nobody asking for proof</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Conversational Scoring Overlay</h3>
+    <p>Add these to the quantitative score from Section 3 for a complete intake qualification.</p>
+    <div class="table-wrap">
+      <table class="score-table">
+        <thead><tr><th>Signal</th><th>Points</th><th>How to Detect</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger = business event (acquisition, new contract, scaling)</td><td>+2</td><td>"I'm purchasing..." / "We just signed..."</td></tr>
+          <tr><td>Trigger = fleeing bad carrier, willing to pay more</td><td>+2</td><td>"They messed it up" / "I'll pay more for reliability"</td></tr>
+          <tr><td>Trigger = license maintenance / minimum coverage</td><td>-2</td><td>"Just to keep the license" / "bare minimum"</td></tr>
+          <tr><td>Describes operations with precision unprompted</td><td>+1</td><td>Specific numbers, class codes, trade process</td></tr>
+          <tr><td>Vague or confused about own business metrics</td><td>-1</td><td>"I just threw out a number" / guessing at revenue</td></tr>
+          <tr><td>Mentions active growth (new locations, hiring)</td><td>+1</td><td>"Taking over another shop" / "hiring soon"</td></tr>
+          <tr><td>Explicitly anti-growth or side hustle</td><td>-1</td><td>"I have a full-time job" / "just me"</td></tr>
+          <tr><td>Multiple external parties need proof of coverage</td><td>+1</td><td>Franchise, landlord, clients, lenders all mentioned</td></tr>
+          <tr><td>Defensive or near-walkaway during intake</td><td>-1</td><td>"I think I'm gonna just pass" / frustration with questions</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">The 60-Second Read</div>
+      <p><strong>High-premium callers</strong> tell you what's happening in their business, use specific numbers without being asked, and reference other people who need proof of coverage.<br><br>
+      <strong>Low-premium callers</strong> frame the purchase as an obligation, guess at their own numbers, and have nobody asking them for a certificate.</p>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="section">
+    <div class="section-label">Section 7</div>
     <h2>Methodology</h2>
     <ul>
       <li><strong>Data sources:</strong> Supabase leads table, lead interactions (call transcripts, emails, texts), and Slack #wins channel.</li>
